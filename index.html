@@ -36,6 +36,7 @@
       display: block;
       margin-top: 16px;
       font-weight: bold;
+      line-height: 1.5;
     }
 
     input {
@@ -104,6 +105,12 @@
       color: #b00020;
       font-weight: bold;
     }
+
+    .small {
+      font-size: 14px;
+      color: #666;
+      font-weight: normal;
+    }
   </style>
 </head>
 
@@ -118,27 +125,84 @@
       y la tasa de sudoración.
     </p>
 
-    <label for="pesoAntes">Peso antes del ejercicio (kg)</label>
-    <input id="pesoAntes" type="number" step="0.1" placeholder="Ej: 70.0" />
+    <label for="pesoAntes">
+      Peso antes del ejercicio (kg)
+    </label>
 
-    <label for="pesoDespues">Peso después del ejercicio (kg)</label>
-    <input id="pesoDespues" type="number" step="0.1" placeholder="Ej: 68.8" />
+    <input
+      id="pesoAntes"
+      type="number"
+      step="0.1"
+      placeholder="Ej: 70.0"
+    />
 
-    <label for="liquido">Líquido ingerido durante el ejercicio (L)</label>
-    <input id="liquido" type="number" step="0.1" placeholder="Ej: 1.2" />
+    <label for="pesoDespues">
+      Peso después del ejercicio (kg)
+    </label>
 
-    <label for="comida">Peso de comida ingerida durante el ejercicio (kg)</label>
-    <input id="comida" type="number" step="0.1" placeholder="Ej: 0.3" />
+    <input
+      id="pesoDespues"
+      type="number"
+      step="0.1"
+      placeholder="Ej: 68.8"
+    />
 
-    <label for="micciones">Número de veces que has orinado durante el ejercicio</label>
-    <input id="micciones" type="number" step="1" placeholder="Ej: 1" />
+    <label for="liquido">
+      Líquido ingerido durante el ejercicio (L)
+    </label>
 
-    <label for="duracion">Duración del ejercicio (horas)</label>
-    <input id="duracion" type="number" step="0.1" placeholder="Ej: 2.5" />
+    <input
+      id="liquido"
+      type="number"
+      step="0.1"
+      placeholder="Ej: 1.2"
+    />
 
-    <button onclick="calcular()">Calcular</button>
+    <label for="comida">
+      Peso de comida ingerida durante el ejercicio (kg)
+    </label>
 
-    <button class="secondary" onclick="copiarResultados()">
+    <input
+      id="comida"
+      type="number"
+      step="0.1"
+      placeholder="Ej: 0.3"
+    />
+
+    <label for="micciones">
+      Número de veces que has orinado durante el ejercicio
+      <span class="small">
+        (Orina estimada: <span id="orinaTexto">0.00 L</span>)
+      </span>
+    </label>
+
+    <input
+      id="micciones"
+      type="number"
+      step="1"
+      placeholder="Ej: 1"
+      oninput="actualizarOrina()"
+    />
+
+    <label for="duracion">
+      Duración del ejercicio (horas)
+    </label>
+
+    <input
+      id="duracion"
+      type="number"
+      step="0.1"
+      placeholder="Ej: 2.5"
+    />
+
+    <button onclick="calcular()">
+      Calcular
+    </button>
+
+    <button
+      class="secondary"
+      onclick="copiarResultados()"
+    >
       Copiar resultados al portapapeles
     </button>
 
@@ -164,22 +228,53 @@
     let textoResultados = "";
 
     function obtenerNumero(id) {
-      const valor = parseFloat(document.getElementById(id).value);
+
+      const valor =
+        parseFloat(document.getElementById(id).value);
+
       return isNaN(valor) ? 0 : valor;
+    }
+
+    function actualizarOrina() {
+
+      const micciones =
+        obtenerNumero("micciones");
+
+      const orinaEstimada =
+        micciones * 0.25;
+
+      document.getElementById("orinaTexto").innerText =
+        `${orinaEstimada.toFixed(2)} L`;
     }
 
     function calcular() {
 
-      const pesoAntes = obtenerNumero("pesoAntes");
-      const pesoDespues = obtenerNumero("pesoDespues");
-      const liquido = obtenerNumero("liquido");
-      const comida = obtenerNumero("comida");
-      const micciones = obtenerNumero("micciones");
-      const duracion = obtenerNumero("duracion");
+      const pesoAntes =
+        obtenerNumero("pesoAntes");
 
-      const resultado = document.getElementById("resultado");
-      const mensajeError = document.getElementById("mensajeError");
-      const mensajeCopiado = document.getElementById("mensajeCopiado");
+      const pesoDespues =
+        obtenerNumero("pesoDespues");
+
+      const liquido =
+        obtenerNumero("liquido");
+
+      const comida =
+        obtenerNumero("comida");
+
+      const micciones =
+        obtenerNumero("micciones");
+
+      const duracion =
+        obtenerNumero("duracion");
+
+      const resultado =
+        document.getElementById("resultado");
+
+      const mensajeError =
+        document.getElementById("mensajeError");
+
+      const mensajeCopiado =
+        document.getElementById("mensajeCopiado");
 
       mensajeError.textContent = "";
       mensajeCopiado.style.display = "none";
@@ -189,6 +284,7 @@
         pesoDespues <= 0 ||
         duracion <= 0
       ) {
+
         resultado.style.display = "none";
 
         mensajeError.textContent =
@@ -198,13 +294,15 @@
       }
 
       /*
-        Estimación estándar:
-        ~0.3 L por micción durante ejercicio
+        Estimación:
+        0.25 L por micción
       */
 
-      const orinaEstimada = micciones * 0.3;
+      const orinaEstimada =
+        micciones * 0.25;
 
-      const perdidaPeso = pesoAntes - pesoDespues;
+      const perdidaPeso =
+        pesoAntes - pesoDespues;
 
       const perdidaSudorTotal =
         perdidaPeso +
@@ -252,10 +350,7 @@ Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %`;
         <strong>${tasaSudoracion.toFixed(2)} L/h</strong><br>
 
         Porcentaje de deshidratación:
-        <strong>${porcentajeDeshidratacion.toFixed(2)}%</strong><br>
-
-        Orina estimada:
-        <strong>${orinaEstimada.toFixed(2)} L</strong>
+        <strong>${porcentajeDeshidratacion.toFixed(2)}%</strong>
       `;
     }
 
