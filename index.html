@@ -143,6 +143,7 @@
       id="pesoAntes"
       type="number"
       step="0.1"
+      min="0"
       placeholder="Ej: 70.0"
     />
 
@@ -154,6 +155,7 @@
       id="pesoDespues"
       type="number"
       step="0.1"
+      min="0"
       placeholder="Ej: 68.8"
     />
 
@@ -165,6 +167,7 @@
       id="liquido"
       type="number"
       step="0.1"
+      min="0"
       placeholder="Ej: 1.2"
     />
 
@@ -176,6 +179,7 @@
       id="comida"
       type="number"
       step="0.1"
+      min="0"
       placeholder="Ej: 0.3"
     />
 
@@ -190,6 +194,7 @@
       id="micciones"
       type="number"
       step="1"
+      min="0"
       placeholder="Ej: 1"
       oninput="actualizarOrina()"
     />
@@ -202,6 +207,7 @@
       id="duracion"
       type="number"
       step="0.1"
+      min="0"
       placeholder="Ej: 2.5"
     />
 
@@ -213,6 +219,7 @@
       id="temperatura"
       type="number"
       step="0.1"
+      min="0"
       placeholder="Ej: 28"
     />
 
@@ -224,6 +231,8 @@
       id="humedad"
       type="number"
       step="1"
+      min="0"
+      max="100"
       placeholder="Ej: 75"
     />
 
@@ -264,7 +273,11 @@
       const valor =
         parseFloat(document.getElementById(id).value);
 
-      return isNaN(valor) ? 0 : valor;
+      if (isNaN(valor) || valor < 0) {
+        return 0;
+      }
+
+      return valor;
     }
 
     function actualizarOrina() {
@@ -277,63 +290,6 @@
 
       document.getElementById("orinaTexto").innerText =
         `${orinaEstimada.toFixed(2)} L`;
-    }
-
-    function generarComentarioAmbiental(
-      temperatura,
-      humedad,
-      tasaSudoracion,
-      porcentajeDeshidratacion
-    ) {
-
-      let comentarios = [];
-
-      if (temperatura > 0 || humedad > 0) {
-
-        comentarios.push(
-          `Condiciones ambientales registradas: ${temperatura.toFixed(1)} °C y ${humedad.toFixed(0)}% de humedad relativa.`
-        );
-      }
-
-      if (temperatura >= 28 && humedad >= 70) {
-
-        comentarios.push(
-          "Condiciones de alto estrés térmico: la combinación de calor y humedad puede dificultar la evaporación del sudor."
-        );
-
-      } else if (temperatura >= 28) {
-
-        comentarios.push(
-          "Temperatura elevada: puede aumentar la tasa de sudoración y las necesidades de hidratación."
-        );
-
-      } else if (humedad >= 70) {
-
-        comentarios.push(
-          "Humedad elevada: puede dificultar la disipación de calor aunque la temperatura no sea extrema."
-        );
-      }
-
-      if (tasaSudoracion >= 1.5) {
-
-        comentarios.push(
-          "La tasa de sudoración es alta. Puede ser útil repetir esta medición en diferentes condiciones para conocer mejor tu perfil de sudoración."
-        );
-      }
-
-      if (porcentajeDeshidratacion >= 2) {
-
-        comentarios.push(
-          "La pérdida de peso supera aproximadamente el 2%, por lo que conviene revisar la estrategia de hidratación en sesiones similares."
-        );
-      }
-
-      if (comentarios.length === 0) {
-
-        return "Sin observaciones ambientales destacables.";
-      }
-
-      return comentarios.join(" ");
     }
 
     function calcular() {
@@ -391,12 +347,12 @@
         return;
       }
 
-      if (humedad < 0 || humedad > 100) {
+      if (humedad > 100) {
 
         resultado.style.display = "none";
 
         mensajeError.textContent =
-          "La humedad relativa debe estar entre 0 y 100%.";
+          "La humedad relativa no puede ser superior al 100%.";
 
         return;
       }
@@ -418,14 +374,6 @@
 
       const porcentajeDeshidratacion =
         (perdidaPeso / pesoAntes) * 100;
-
-      const comentarioAmbiental =
-        generarComentarioAmbiental(
-          temperatura,
-          humedad,
-          tasaSudoracion,
-          porcentajeDeshidratacion
-        );
 
       textoResultados =
 `Resultados de la calculadora de deshidratación
@@ -449,10 +397,7 @@ Humedad relativa: ${humedad.toFixed(0)} %
 Pérdida de peso: ${perdidaPeso.toFixed(2)} kg
 Pérdida total estimada de sudor: ${perdidaSudorTotal.toFixed(2)} L
 Tasa de sudoración: ${tasaSudoracion.toFixed(2)} L/h
-Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %
-
-Comentario ambiental:
-${comentarioAmbiental}`;
+Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %`;
 
       resultado.style.display = "block";
 
@@ -475,10 +420,7 @@ ${comentarioAmbiental}`;
         <strong>${tasaSudoracion.toFixed(2)} L/h</strong><br>
 
         Porcentaje de deshidratación:
-        <strong>${porcentajeDeshidratacion.toFixed(2)}%</strong><br><br>
-
-        <strong>Comentario ambiental:</strong><br>
-        ${comentarioAmbiental}
+        <strong>${porcentajeDeshidratacion.toFixed(2)}%</strong>
       `;
     }
 
