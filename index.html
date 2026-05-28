@@ -1,100 +1,247 @@
-<section id="calculadora-deshidratacion" style="max-width:700px;margin:auto;padding:24px;border:1px solid #ddd;border-radius:16px;font-family:Arial,sans-serif;">
-  <h2>Calculadora de tasa de deshidratación</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de tasa de deshidratación</title>
 
-  <label>Peso antes del ejercicio (kg)</label>
-  <input id="pesoAntes" type="number" step="0.1" placeholder="Ej: 70.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #111;
+    }
 
-  <label>Peso después del ejercicio (kg)</label>
-  <input id="pesoDespues" type="number" step="0.1" placeholder="Ej: 68.8">
+    .container {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 24px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
 
-  <label>Líquido ingerido durante el ejercicio (L)</label>
-  <input id="liquidoIngerido" type="number" step="0.1" placeholder="Ej: 1.2">
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+    }
 
-  <label>Orina durante el ejercicio (L)</label>
-  <input id="orina" type="number" step="0.1" placeholder="Ej: 0.2">
+    p {
+      line-height: 1.6;
+      color: #444;
+    }
 
-  <label>Duración del ejercicio (horas)</label>
-  <input id="duracion" type="number" step="0.1" placeholder="Ej: 2.5">
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
 
-  <button onclick="calcularDeshidratacion()">Calcular</button>
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
 
-  <div id="resultadoDeshidratacion"></div>
-</section>
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-<style>
-  #calculadora-deshidratacion input {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
+    button:hover {
+      background: #333;
+    }
 
-  #calculadora-deshidratacion button {
-    width: 100%;
-    padding: 12px;
-    background: #111;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-  }
+    .secondary {
+      background: #e8e8e8;
+      color: #111;
+    }
 
-  #calculadora-deshidratacion button:hover {
-    background: #333;
-  }
+    .secondary:hover {
+      background: #d8d8d8;
+    }
 
-  #resultadoDeshidratacion {
-    margin-top: 20px;
-    padding: 16px;
-    border-radius: 12px;
-    background: #f5f5f5;
-    line-height: 1.6;
-  }
-</style>
+    #resultado {
+      margin-top: 24px;
+      padding: 18px;
+      background: #f7f7f7;
+      border-radius: 14px;
+      line-height: 1.7;
+      display: none;
+    }
 
-<script>
-function calcularDeshidratacion() {
-  const pesoAntes = parseFloat(document.getElementById("pesoAntes").value);
-  const pesoDespues = parseFloat(document.getElementById("pesoDespues").value);
-  const liquidoIngerido = parseFloat(document.getElementById("liquidoIngerido").value) || 0;
-  const orina = parseFloat(document.getElementById("orina").value) || 0;
-  const duracion = parseFloat(document.getElementById("duracion").value);
+    .warning {
+      margin-top: 16px;
+      padding: 14px;
+      background: #fff3cd;
+      border-radius: 12px;
+      color: #6b4e00;
+      font-size: 14px;
+    }
 
-  const resultado = document.getElementById("resultadoDeshidratacion");
+    .ok {
+      margin-top: 12px;
+      color: green;
+      font-weight: bold;
+      display: none;
+    }
 
-  if (!pesoAntes || !pesoDespues || !duracion || pesoAntes <= 0 || pesoDespues <= 0 || duracion <= 0) {
-    resultado.innerHTML = "Introduce valores válidos en peso antes, peso después y duración.";
-    return;
-  }
+    .error {
+      margin-top: 12px;
+      color: #b00020;
+      font-weight: bold;
+    }
+  </style>
+</head>
 
-  const perdidaPeso = pesoAntes - pesoDespues;
-  const perdidaSudorTotal = perdidaPeso + liquidoIngerido - orina;
-  const tasaSudoracion = perdidaSudorTotal / duracion;
-  const porcentajeDeshidratacion = (perdidaPeso / pesoAntes) * 100;
-  const liquidoParaRehidratar = perdidaPeso * 1.5;
+<body>
 
-  let interpretacion = "";
+  <main class="container">
+    <h1>Calculadora de tasa de deshidratación</h1>
 
-  if (porcentajeDeshidratacion < 1) {
-    interpretacion = "Deshidratación baja o bien controlada.";
-  } else if (porcentajeDeshidratacion < 2) {
-    interpretacion = "Deshidratación ligera. Conviene mejorar la estrategia de hidratación.";
-  } else if (porcentajeDeshidratacion < 3) {
-    interpretacion = "Deshidratación moderada. Puede afectar al rendimiento.";
-  } else {
-    interpretacion = "Deshidratación elevada. Riesgo importante de caída del rendimiento y problemas asociados.";
-  }
+    <p>
+      Introduce los datos del entrenamiento o competición para estimar la pérdida de sudor,
+      la tasa de sudoración y el porcentaje de deshidratación.
+    </p>
 
-  resultado.innerHTML = `
-    <strong>Resultados</strong><br>
-    Pérdida de peso: <strong>${perdidaPeso.toFixed(2)} kg</strong><br>
-    Pérdida total estimada de sudor: <strong>${perdidaSudorTotal.toFixed(2)} L</strong><br>
-    Tasa de sudoración: <strong>${tasaSudoracion.toFixed(2)} L/h</strong><br>
-    Porcentaje de deshidratación: <strong>${porcentajeDeshidratacion.toFixed(2)}%</strong><br>
-    Líquido recomendado para rehidratar: <strong>${liquidoParaRehidratar.toFixed(2)} L</strong><br><br>
-    <strong>Interpretación:</strong> ${interpretacion}
-  `;
-}
-</script>
+    <label for="pesoAntes">Peso antes del ejercicio (kg)</label>
+    <input id="pesoAntes" type="number" step="0.1" placeholder="Ej: 70.0" />
+
+    <label for="pesoDespues">Peso después del ejercicio (kg)</label>
+    <input id="pesoDespues" type="number" step="0.1" placeholder="Ej: 68.8" />
+
+    <label for="liquido">Líquido ingerido durante el ejercicio (L)</label>
+    <input id="liquido" type="number" step="0.1" placeholder="Ej: 1.2" />
+
+    <label for="orina">Orina durante el ejercicio (L)</label>
+    <input id="orina" type="number" step="0.1" placeholder="Ej: 0.2" />
+
+    <label for="duracion">Duración del ejercicio (horas)</label>
+    <input id="duracion" type="number" step="0.1" placeholder="Ej: 2.5" />
+
+    <button onclick="calcular()">Calcular</button>
+    <button class="secondary" onclick="copiarResultados()">Copiar resultados al portapapeles</button>
+
+    <div id="mensajeCopiado" class="ok">Resultados copiados al portapapeles.</div>
+    <div id="mensajeError" class="error"></div>
+
+    <div id="resultado"></div>
+
+    <div class="warning">
+      Esta calculadora ofrece una estimación práctica. Para mayor precisión, usa siempre la misma báscula,
+      pesa al deportista con ropa seca o mínima, y registra bien la ingesta de líquidos y la orina.
+    </div>
+  </main>
+
+  <script>
+    let textoResultados = "";
+
+    function obtenerNumero(id) {
+      const valor = parseFloat(document.getElementById(id).value);
+      return isNaN(valor) ? 0 : valor;
+    }
+
+    function calcular() {
+      const pesoAntes = obtenerNumero("pesoAntes");
+      const pesoDespues = obtenerNumero("pesoDespues");
+      const liquido = obtenerNumero("liquido");
+      const orina = obtenerNumero("orina");
+      const duracion = obtenerNumero("duracion");
+
+      const resultado = document.getElementById("resultado");
+      const mensajeError = document.getElementById("mensajeError");
+      const mensajeCopiado = document.getElementById("mensajeCopiado");
+
+      mensajeError.textContent = "";
+      mensajeCopiado.style.display = "none";
+
+      if (pesoAntes <= 0 || pesoDespues <= 0 || duracion <= 0) {
+        resultado.style.display = "none";
+        mensajeError.textContent = "Introduce valores válidos en peso antes, peso después y duración.";
+        return;
+      }
+
+      const perdidaPeso = pesoAntes - pesoDespues;
+      const perdidaSudorTotal = perdidaPeso + liquido - orina;
+      const tasaSudoracion = perdidaSudorTotal / duracion;
+      const porcentajeDeshidratacion = (perdidaPeso / pesoAntes) * 100;
+      const liquidoRehidratacion = Math.max(perdidaPeso * 1.5, 0);
+
+      let interpretacion = "";
+
+      if (porcentajeDeshidratacion < 1) {
+        interpretacion = "Deshidratación baja o bien controlada.";
+      } else if (porcentajeDeshidratacion < 2) {
+        interpretacion = "Deshidratación ligera. Conviene revisar la estrategia de hidratación.";
+      } else if (porcentajeDeshidratacion < 3) {
+        interpretacion = "Deshidratación moderada. Puede afectar al rendimiento.";
+      } else {
+        interpretacion = "Deshidratación elevada. Riesgo importante de caída del rendimiento.";
+      }
+
+      textoResultados =
+`Resultados de la calculadora de deshidratación
+
+Peso antes: ${pesoAntes.toFixed(2)} kg
+Peso después: ${pesoDespues.toFixed(2)} kg
+Líquido ingerido: ${liquido.toFixed(2)} L
+Orina: ${orina.toFixed(2)} L
+Duración: ${duracion.toFixed(2)} h
+
+Pérdida de peso: ${perdidaPeso.toFixed(2)} kg
+Pérdida total estimada de sudor: ${perdidaSudorTotal.toFixed(2)} L
+Tasa de sudoración: ${tasaSudoracion.toFixed(2)} L/h
+Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %
+Líquido recomendado para rehidratación: ${liquidoRehidratacion.toFixed(2)} L
+
+Interpretación:
+${interpretacion}`;
+
+      resultado.style.display = "block";
+      resultado.innerHTML = `
+        <strong>Resultados</strong><br><br>
+        Pérdida de peso: <strong>${perdidaPeso.toFixed(2)} kg</strong><br>
+        Pérdida total estimada de sudor: <strong>${perdidaSudorTotal.toFixed(2)} L</strong><br>
+        Tasa de sudoración: <strong>${tasaSudoracion.toFixed(2)} L/h</strong><br>
+        Porcentaje de deshidratación: <strong>${porcentajeDeshidratacion.toFixed(2)}%</strong><br>
+        Líquido recomendado para rehidratación: <strong>${liquidoRehidratacion.toFixed(2)} L</strong><br><br>
+        <strong>Interpretación:</strong> ${interpretacion}
+      `;
+    }
+
+    function copiarResultados() {
+      const mensajeCopiado = document.getElementById("mensajeCopiado");
+      const mensajeError = document.getElementById("mensajeError");
+
+      mensajeCopiado.style.display = "none";
+      mensajeError.textContent = "";
+
+      if (!textoResultados) {
+        mensajeError.textContent = "Primero calcula los resultados antes de copiarlos.";
+        return;
+      }
+
+      navigator.clipboard.writeText(textoResultados)
+        .then(() => {
+          mensajeCopiado.style.display = "block";
+        })
+        .catch(() => {
+          mensajeError.textContent = "No se pudieron copiar los resultados. Prueba desde HTTPS o GitHub Pages.";
+        });
+    }
+  </script>
+
+</body>
+</html>
