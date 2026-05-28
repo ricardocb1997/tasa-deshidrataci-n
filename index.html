@@ -122,8 +122,7 @@
 
     <p>
       Introduce los datos del entrenamiento o competición para estimar la pérdida de sudor
-      y la tasa de sudoración. La temperatura y la humedad se utilizan como contexto,
-      no modifican directamente el cálculo.
+      y la tasa de sudoración.
     </p>
 
     <label for="fecha">
@@ -219,7 +218,6 @@
       id="temperatura"
       type="number"
       step="0.1"
-      min="0"
       placeholder="Ej: 28"
     />
 
@@ -316,7 +314,7 @@
         obtenerNumero("duracion");
 
       const temperatura =
-        obtenerNumero("temperatura");
+        parseFloat(document.getElementById("temperatura").value);
 
       const humedad =
         obtenerNumero("humedad");
@@ -391,7 +389,7 @@ Orina estimada: ${orinaEstimada.toFixed(2)} L
 
 Duración: ${duracion.toFixed(2)} h
 
-Temperatura ambiente: ${temperatura.toFixed(1)} °C
+Temperatura ambiente: ${isNaN(temperatura) ? "No especificada" : temperatura.toFixed(1) + " °C"}
 Humedad relativa: ${humedad.toFixed(0)} %
 
 Pérdida de peso: ${perdidaPeso.toFixed(2)} kg
@@ -408,7 +406,11 @@ Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %`;
         <strong>${fecha || "No especificada"}</strong><br><br>
 
         Condiciones ambientales:
-        <strong>${temperatura.toFixed(1)} °C · ${humedad.toFixed(0)}% HR</strong><br><br>
+        <strong>
+          ${isNaN(temperatura) ? "Temperatura no especificada" : temperatura.toFixed(1) + " °C"}
+          ·
+          ${humedad.toFixed(0)}% HR
+        </strong><br><br>
 
         Pérdida de peso:
         <strong>${perdidaPeso.toFixed(2)} kg</strong><br>
