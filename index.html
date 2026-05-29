@@ -50,6 +50,17 @@
       background: white;
     }
 
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type=number] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
     .time-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -330,7 +341,6 @@ Número de micciones: ${micciones}
 Orina estimada: ${orinaEstimada.toFixed(2)} L
 
 Duración: ${duracionTexto}
-Duración decimal utilizada para el cálculo: ${duracion.toFixed(2)} h
 Intensidad del entrenamiento: ${intensidad}
 
 Temperatura ambiente: ${isNaN(temperatura) ? "No especificada" : temperatura.toFixed(1) + " °C"}
@@ -398,6 +408,12 @@ Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %`;
             "No se pudieron copiar los resultados.";
         });
     }
+
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+      input.addEventListener('wheel', function(e) {
+        e.preventDefault();
+      });
+    });
   </script>
 
 </body>
