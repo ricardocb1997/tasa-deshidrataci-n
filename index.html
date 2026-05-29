@@ -39,7 +39,7 @@
       line-height: 1.5;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 12px;
       margin-top: 6px;
@@ -47,6 +47,13 @@
       border-radius: 10px;
       font-size: 16px;
       box-sizing: border-box;
+      background: white;
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
     }
 
     button {
@@ -111,6 +118,17 @@
       color: #666;
       font-weight: normal;
     }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      .time-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -125,62 +143,20 @@
       y la tasa de sudoración.
     </p>
 
-    <label for="fecha">
-      Fecha del entrenamiento
-    </label>
+    <label for="fecha">Fecha del entrenamiento</label>
+    <input id="fecha" type="date" />
 
-    <input
-      id="fecha"
-      type="date"
-    />
+    <label for="pesoAntes">Peso antes del ejercicio (kg)</label>
+    <input id="pesoAntes" type="number" step="0.1" min="0" placeholder="Ej: 70.0" />
 
-    <label for="pesoAntes">
-      Peso antes del ejercicio (kg)
-    </label>
+    <label for="pesoDespues">Peso después del ejercicio (kg)</label>
+    <input id="pesoDespues" type="number" step="0.1" min="0" placeholder="Ej: 68.8" />
 
-    <input
-      id="pesoAntes"
-      type="number"
-      step="0.1"
-      min="0"
-      placeholder="Ej: 70.0"
-    />
+    <label for="liquido">Líquido ingerido durante el ejercicio (L)</label>
+    <input id="liquido" type="number" step="0.1" min="0" placeholder="Ej: 1.2" />
 
-    <label for="pesoDespues">
-      Peso después del ejercicio (kg)
-    </label>
-
-    <input
-      id="pesoDespues"
-      type="number"
-      step="0.1"
-      min="0"
-      placeholder="Ej: 68.8"
-    />
-
-    <label for="liquido">
-      Líquido ingerido durante el ejercicio (L)
-    </label>
-
-    <input
-      id="liquido"
-      type="number"
-      step="0.1"
-      min="0"
-      placeholder="Ej: 1.2"
-    />
-
-    <label for="comida">
-      Peso de comida ingerida durante el ejercicio (kg)
-    </label>
-
-    <input
-      id="comida"
-      type="number"
-      step="0.1"
-      min="0"
-      placeholder="Ej: 0.3"
-    />
+    <label for="comida">Peso de comida ingerida durante el ejercicio (kg)</label>
+    <input id="comida" type="number" step="0.1" min="0" placeholder="Ej: 0.3" />
 
     <label for="micciones">
       Número de veces que has orinado durante el ejercicio
@@ -198,50 +174,31 @@
       oninput="actualizarOrina()"
     />
 
-    <label for="duracion">
-      Duración del ejercicio (horas)
-    </label>
+    <label>Duración del ejercicio</label>
 
-    <input
-      id="duracion"
-      type="number"
-      step="0.1"
-      min="0"
-      placeholder="Ej: 2.5"
-    />
+    <div class="time-grid">
+      <input id="horas" type="number" step="1" min="0" placeholder="Horas" />
+      <input id="minutos" type="number" step="1" min="0" max="59" placeholder="Minutos" />
+      <input id="segundos" type="number" step="1" min="0" max="59" placeholder="Segundos" />
+    </div>
 
-    <label for="temperatura">
-      Temperatura ambiente (°C)
-    </label>
+    <label for="intensidad">Intensidad del entrenamiento</label>
+    <select id="intensidad">
+      <option value="">Selecciona una opción</option>
+      <option value="Baja">Baja / suave</option>
+      <option value="Media">Media</option>
+      <option value="Alta">Alta / intensa</option>
+    </select>
 
-    <input
-      id="temperatura"
-      type="number"
-      step="0.1"
-      placeholder="Ej: 28"
-    />
+    <label for="temperatura">Temperatura ambiente (°C)</label>
+    <input id="temperatura" type="number" step="0.1" placeholder="Ej: 28" />
 
-    <label for="humedad">
-      Humedad relativa (%)
-    </label>
+    <label for="humedad">Humedad relativa (%)</label>
+    <input id="humedad" type="number" step="1" min="0" max="100" placeholder="Ej: 75" />
 
-    <input
-      id="humedad"
-      type="number"
-      step="1"
-      min="0"
-      max="100"
-      placeholder="Ej: 75"
-    />
+    <button onclick="calcular()">Calcular</button>
 
-    <button onclick="calcular()">
-      Calcular
-    </button>
-
-    <button
-      class="secondary"
-      onclick="copiarResultados()"
-    >
+    <button class="secondary" onclick="copiarResultados()">
       Copiar resultados al portapapeles
     </button>
 
@@ -263,13 +220,10 @@
   </main>
 
   <script>
-
     let textoResultados = "";
 
     function obtenerNumero(id) {
-
-      const valor =
-        parseFloat(document.getElementById(id).value);
+      const valor = parseFloat(document.getElementById(id).value);
 
       if (isNaN(valor) || valor < 0) {
         return 0;
@@ -279,93 +233,81 @@
     }
 
     function actualizarOrina() {
-
-      const micciones =
-        obtenerNumero("micciones");
-
-      const orinaEstimada =
-        micciones * 0.25;
+      const micciones = obtenerNumero("micciones");
+      const orinaEstimada = micciones * 0.25;
 
       document.getElementById("orinaTexto").innerText =
         `${orinaEstimada.toFixed(2)} L`;
     }
 
+    function obtenerDuracionHoras() {
+      const horas = obtenerNumero("horas");
+      const minutos = obtenerNumero("minutos");
+      const segundos = obtenerNumero("segundos");
+
+      return horas + (minutos / 60) + (segundos / 3600);
+    }
+
+    function formatearDuracion() {
+      const horas = Math.floor(obtenerNumero("horas"));
+      const minutos = Math.floor(obtenerNumero("minutos"));
+      const segundos = Math.floor(obtenerNumero("segundos"));
+
+      const partes = [];
+
+      if (horas > 0) partes.push(`${horas} h`);
+      if (minutos > 0) partes.push(`${minutos} min`);
+      if (segundos > 0) partes.push(`${segundos} s`);
+
+      return partes.length > 0 ? partes.join(" ") : "0 s";
+    }
+
     function calcular() {
+      const fecha = document.getElementById("fecha").value;
+      const pesoAntes = obtenerNumero("pesoAntes");
+      const pesoDespues = obtenerNumero("pesoDespues");
+      const liquido = obtenerNumero("liquido");
+      const comida = obtenerNumero("comida");
+      const micciones = obtenerNumero("micciones");
+      const duracion = obtenerDuracionHoras();
+      const duracionTexto = formatearDuracion();
+      const intensidad = document.getElementById("intensidad").value || "No especificada";
+      const temperatura = parseFloat(document.getElementById("temperatura").value);
+      const humedad = obtenerNumero("humedad");
 
-      const fecha =
-        document.getElementById("fecha").value;
-
-      const pesoAntes =
-        obtenerNumero("pesoAntes");
-
-      const pesoDespues =
-        obtenerNumero("pesoDespues");
-
-      const liquido =
-        obtenerNumero("liquido");
-
-      const comida =
-        obtenerNumero("comida");
-
-      const micciones =
-        obtenerNumero("micciones");
-
-      const duracion =
-        obtenerNumero("duracion");
-
-      const temperatura =
-        parseFloat(document.getElementById("temperatura").value);
-
-      const humedad =
-        obtenerNumero("humedad");
-
-      const resultado =
-        document.getElementById("resultado");
-
-      const mensajeError =
-        document.getElementById("mensajeError");
-
-      const mensajeCopiado =
-        document.getElementById("mensajeCopiado");
+      const resultado = document.getElementById("resultado");
+      const mensajeError = document.getElementById("mensajeError");
+      const mensajeCopiado = document.getElementById("mensajeCopiado");
 
       mensajeError.textContent = "";
       mensajeCopiado.style.display = "none";
 
-      if (
-        pesoAntes <= 0 ||
-        pesoDespues <= 0 ||
-        duracion <= 0
-      ) {
-
+      if (pesoAntes <= 0 || pesoDespues <= 0 || duracion <= 0) {
         resultado.style.display = "none";
-
         mensajeError.textContent =
           "Introduce valores válidos en peso antes, peso después y duración.";
+        return;
+      }
 
+      if (obtenerNumero("minutos") > 59 || obtenerNumero("segundos") > 59) {
+        resultado.style.display = "none";
+        mensajeError.textContent =
+          "Los minutos y segundos deben estar entre 0 y 59.";
         return;
       }
 
       if (humedad > 100) {
-
         resultado.style.display = "none";
-
         mensajeError.textContent =
           "La humedad relativa no puede ser superior al 100%.";
-
         return;
       }
 
-      const orinaEstimada =
-        micciones * 0.25;
-
-      const perdidaPeso =
-        pesoAntes - pesoDespues;
+      const orinaEstimada = micciones * 0.25;
+      const perdidaPeso = pesoAntes - pesoDespues;
 
       const perdidaSudorTotal =
-        perdidaPeso +
-        liquido +
-        comida -
-        orinaEstimada;
+        perdidaPeso + liquido + comida - orinaEstimada;
 
       const tasaSudoracion =
         perdidaSudorTotal / duracion;
@@ -387,7 +329,9 @@ Comida ingerida: ${comida.toFixed(2)} kg
 Número de micciones: ${micciones}
 Orina estimada: ${orinaEstimada.toFixed(2)} L
 
-Duración: ${duracion.toFixed(2)} h
+Duración: ${duracionTexto}
+Duración decimal utilizada para el cálculo: ${duracion.toFixed(2)} h
+Intensidad del entrenamiento: ${intensidad}
 
 Temperatura ambiente: ${isNaN(temperatura) ? "No especificada" : temperatura.toFixed(1) + " °C"}
 Humedad relativa: ${humedad.toFixed(0)} %
@@ -404,6 +348,12 @@ Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %`;
 
         Fecha:
         <strong>${fecha || "No especificada"}</strong><br><br>
+
+        Duración:
+        <strong>${duracionTexto}</strong><br>
+
+        Intensidad:
+        <strong>${intensidad}</strong><br><br>
 
         Condiciones ambientales:
         <strong>
@@ -427,40 +377,27 @@ Porcentaje de deshidratación: ${porcentajeDeshidratacion.toFixed(2)} %`;
     }
 
     function copiarResultados() {
-
-      const mensajeCopiado =
-        document.getElementById("mensajeCopiado");
-
-      const mensajeError =
-        document.getElementById("mensajeError");
+      const mensajeCopiado = document.getElementById("mensajeCopiado");
+      const mensajeError = document.getElementById("mensajeError");
 
       mensajeCopiado.style.display = "none";
       mensajeError.textContent = "";
 
       if (!textoResultados) {
-
         mensajeError.textContent =
           "Primero calcula los resultados antes de copiarlos.";
-
         return;
       }
 
       navigator.clipboard.writeText(textoResultados)
-
         .then(() => {
-
           mensajeCopiado.style.display = "block";
-
         })
-
         .catch(() => {
-
           mensajeError.textContent =
             "No se pudieron copiar los resultados.";
-
         });
     }
-
   </script>
 
 </body>
